@@ -1,0 +1,19 @@
+rules:
+  - id: ssrf-allowlist-prefix
+    languages: [python]
+    severity: WARNING
+    message: >
+      URL allowlist based on a string prefix. An attacker controls the parsed
+      host through userinfo (http://trusted@evil/) or a lookalike path. Parse the
+      URL and compare the hostname exactly, then block non-public addresses.
+    metadata:
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      references:
+        - https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/
+    patterns:
+      - pattern-either:
+          - pattern: $URL.startswith($PREFIX)
+          - pattern: not $URL.startswith($PREFIX)
+      - metavariable-regex:
+          metavariable: $PREFIX
+          regex: ^["'](https?://).*

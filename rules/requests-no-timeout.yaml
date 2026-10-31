@@ -1,0 +1,22 @@
+rules:
+  - id: requests-no-timeout
+    languages: [python]
+    severity: WARNING
+    message: >
+      requests call without a timeout. A slow or hostile server holds the worker
+      open indefinitely, which starves the pool. Pass timeout=<seconds>.
+    metadata:
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      references:
+        - https://requests.readthedocs.io/en/latest/user/advanced/#timeouts
+    patterns:
+      - pattern-either:
+          - pattern: requests.get(...)
+          - pattern: requests.post(...)
+          - pattern: requests.put(...)
+          - pattern: requests.delete(...)
+          - pattern: requests.head(...)
+          - pattern: requests.patch(...)
+          - pattern: requests.request(...)
+      - pattern-not: requests.$M(..., timeout=$T)
+      - pattern-not: requests.$M(..., timeout=$T, ...)
